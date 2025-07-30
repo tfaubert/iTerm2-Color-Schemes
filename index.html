@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QA Test Plans Dashboard</title>
+    <link rel="stylesheet" href="styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Header -->
+        <header class="dashboard-header">
+            <div class="header-content">
+                <div class="header-left">
+                    <h1><i class="fas fa-clipboard-list"></i> QA Test Plans Dashboard</h1>
+                    <p class="subtitle">Centralized test plan management and tracking</p>
+                </div>
+                <div class="header-right">
+                    <div class="search-container">
+                        <i class="fas fa-search"></i>
+                        <input type="text" id="searchInput" placeholder="Search test plans...">
+                    </div>
+                    <button class="btn btn-primary" id="addTestPlanBtn">
+                        <i class="fas fa-plus"></i> Add Test Plan
+                    </button>
+                </div>
+            </div>
+        </header>
+
+        <!-- Stats Overview -->
+        <section class="stats-section">
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon total">
+                        <i class="fas fa-clipboard-list"></i>
+                    </div>
+                    <div class="stat-content">
+                        <h3 id="totalPlans">0</h3>
+                        <p>Total Test Plans</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon active">
+                        <i class="fas fa-play-circle"></i>
+                    </div>
+                    <div class="stat-content">
+                        <h3 id="activePlans">0</h3>
+                        <p>Active Plans</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon completed">
+                        <i class="fas fa-check-circle"></i>
+                    </div>
+                    <div class="stat-content">
+                        <h3 id="completedPlans">0</h3>
+                        <p>Completed Plans</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon coverage">
+                        <i class="fas fa-chart-pie"></i>
+                    </div>
+                    <div class="stat-content">
+                        <h3 id="testCoverage">0%</h3>
+                        <p>Test Coverage</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Filters -->
+        <section class="filters-section">
+            <div class="filters-container">
+                <div class="filter-group">
+                    <label>Status:</label>
+                    <select id="statusFilter">
+                        <option value="">All Statuses</option>
+                        <option value="draft">Draft</option>
+                        <option value="active">Active</option>
+                        <option value="completed">Completed</option>
+                        <option value="archived">Archived</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label>Priority:</label>
+                    <select id="priorityFilter">
+                        <option value="">All Priorities</option>
+                        <option value="high">High</option>
+                        <option value="medium">Medium</option>
+                        <option value="low">Low</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label>Team:</label>
+                    <select id="teamFilter">
+                        <option value="">All Teams</option>
+                    </select>
+                </div>
+                <button class="btn btn-secondary" id="clearFilters">
+                    <i class="fas fa-times"></i> Clear Filters
+                </button>
+            </div>
+        </section>
+
+        <!-- Test Plans Grid -->
+        <section class="test-plans-section">
+            <div class="section-header">
+                <h2>Test Plans</h2>
+                <div class="view-toggle">
+                    <button class="view-btn active" data-view="grid">
+                        <i class="fas fa-th-large"></i>
+                    </button>
+                    <button class="view-btn" data-view="list">
+                        <i class="fas fa-list"></i>
+                    </button>
+                </div>
+            </div>
+            
+            <div id="testPlansContainer" class="test-plans-grid">
+                <!-- Test plans will be dynamically loaded here -->
+            </div>
+            
+            <div id="emptyState" class="empty-state" style="display: none;">
+                <i class="fas fa-clipboard-list"></i>
+                <h3>No Test Plans Found</h3>
+                <p>Create your first test plan to get started with organized testing.</p>
+                <button class="btn btn-primary" id="createFirstPlan">
+                    <i class="fas fa-plus"></i> Create First Test Plan
+                </button>
+            </div>
+        </section>
+    </div>
+
+    <!-- Test Plan Modal -->
+    <div id="testPlanModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 id="modalTitle">Test Plan Details</h2>
+                <button class="close-btn" id="closeModal">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body" id="modalBody">
+                <!-- Test plan details will be loaded here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Add/Edit Test Plan Modal -->
+    <div id="addTestPlanModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Add New Test Plan</h2>
+                <button class="close-btn" id="closeAddModal">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="testPlanForm">
+                    <div class="form-group">
+                        <label for="planTitle">Title *</label>
+                        <input type="text" id="planTitle" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="planDescription">Description</label>
+                        <textarea id="planDescription" rows="3"></textarea>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="planStatus">Status</label>
+                            <select id="planStatus">
+                                <option value="draft">Draft</option>
+                                <option value="active">Active</option>
+                                <option value="completed">Completed</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="planPriority">Priority</label>
+                            <select id="planPriority">
+                                <option value="low">Low</option>
+                                <option value="medium">Medium</option>
+                                <option value="high">High</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="planTeam">Team</label>
+                        <input type="text" id="planTeam">
+                    </div>
+                    <div class="form-group">
+                        <label for="planTestCases">Test Cases (JSON)</label>
+                        <textarea id="planTestCases" rows="5" placeholder='[{"id": 1, "title": "Test Case 1", "status": "pending"}]'></textarea>
+                    </div>
+                    <div class="form-actions">
+                        <button type="button" class="btn btn-secondary" id="cancelAdd">Cancel</button>
+                        <button type="submit" class="btn btn-primary">Save Test Plan</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
